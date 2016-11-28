@@ -1,0 +1,104 @@
+---
+title: "Live Session 11"
+author: "Tracie Scott"
+date: "November 28, 2016"
+output: 
+  html_document:
+    keep_md: true
+---
+# Tracie Scott - Live Session 11 
+# Using hSales data
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+# Display session info
+sessionInfo()
+# load any packages required
+library(fpp) #fpp package must be installed first
+
+# SET WORKING DIRECTORY HERE!!
+setwd("C:/Users/User/Documents/hsales")
+
+# remember that the working directory gets reset between chunks
+```
+
+# Problem: Time Series
+####Plot the time series. 
+####Can you identify seasonal fluctuations and/or a trend? 
+## Plot for Time Series
+
+```{r A-TimeSeries, echo=TRUE}
+library(fpp) #fpp package must be installed first
+hsales2 <- ts(hsales,start=c(1973,1),frequency=12)
+plot(hsales2)
+```
+
+## Response for Time Series
+#### Notice repeated spikes in the data of similar magnitude that could be seasonal fluctuations. 
+#### While the data is fluctuating over time, there is not a consistent trend.
+#### .  
+# Problem : Traditional Decommposition
+#### Use a classical decomposition to calculate the trend-cycle and seasonal indices. 
+#### Do the results support the graphical interpretation from part (a)?
+## Plot for Traditional Decomposition
+
+```{r B-Decompose, echo=TRUE}
+fitd <- decompose(hsales)
+plot(fitd)
+```
+
+## Response for Traditioanl Decomposition
+#### Yes, this also seems to show a repeated seasonal component without a constant trend from start to finish. 
+#### The decompose also shows a significant ‘random’ effect after the trend and seasonal components are removed.
+#### .
+# Problem:  Seasonally Adjusted
+#### Compute and plot the seasonally adjusted data.
+## Plot for Seasonally Adjusted
+
+```{r C-Seasonal, echo=TRUE}
+hsalesadj <- seasadj(fitd)
+plot(hsalesadj)
+```
+
+## Response for Seasonally Adjusted
+#### If this chart 'removes' the seasonal findings, then it appears that most of the fluctuations are due to 
+#### random variations in the data as the seasonally adjusted chart looks much like the original data.
+#### . 
+# Problem: Create Outlier
+#### Change one observation to be an outlier (e.g., add 500 to one observation)
+#### Recompute the seasonally adjusted data. 
+#### What is the effect of the outlier?
+#### Does it make any difference if the outlier is near the end rather than in the middle of the time series?
+## Plost for Outlier (mid-series)
+
+```{r D-Outlier, echo=TRUE}
+hsales3 <- ts(c(hsales[1:54],hsales[55]+200,hsales[56:275]),start=c(1973,1),frequency=12)
+plot(hsales3)
+
+fitd <- decompose(hsales3)
+plot(fitd)
+
+hsalesadj <- seasadj(fitd)
+plot(hsalesadj)
+```
+
+## Response for Create Outlier
+#### The outlier makes the seasonally adjusted chart much harder to interpret,
+#### but it does not appear to have a significant impact on the analysis.
+#### .
+# Problem Decompose with STL
+#### Now use STL to decompose the original series.
+#### Do the results support the graphical interpretation from part (a)?
+## Plot for STL
+
+```{r E-stl, echo=TRUE}
+fit <- stl(hsales, s.window=5)
+plot(fit)
+```
+
+## Response for STL
+#### The output from stl reflects more variability in the seasonal component than did decompose, 
+#### but the results are similar. Both decomposition methods seem to indicate there is a repeated seasonal
+#### pattern without a pronounced upward or downward trend over time. 
+#### However, the ‘random’ and ‘residual’ plots show a great deal of unexplained variability in the data even after
+#### removing the seasonal the trend components.
